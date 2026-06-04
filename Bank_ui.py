@@ -10,7 +10,7 @@ st.set_page_config(
     page_title="TATA CAPITAL BANK",
     page_icon="🏦",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="expanded",
 )
 
 # ─── GLOBAL CSS ─────────────────────────────────────────────────────────────
@@ -34,8 +34,8 @@ html, body, [data-testid="stAppViewContainer"] {
         #080c14 !important;
 }
 
-[data-testid="stHeader"], [data-testid="stToolbar"] { display: none !important; }
-[data-testid="stSidebar"] { display: none !important; }
+/*  [data-testid="stHeader"], [data-testid="stToolbar"] { display: none !important; }*/
+/* [data-testid="stSidebar"] { display: none !important; }*/
 .block-container { padding: 2rem 3rem !important; max-width: 1100px !important; }
 
 /* ── Typography ── */
@@ -240,6 +240,29 @@ div[data-testid="stHorizontalBlock"] button:hover {
     padding: 0.4rem;
     margin-bottom: 2rem;
 }
+            
+            section[data-testid="stSidebar"] {
+    background: linear-gradient(
+        180deg,
+        #0b1424 0%,
+        #08111d 100%
+    ) !important;
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+section[data-testid="stSidebar"] .stRadio label {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 8px;
+    transition: all 0.25s ease;
+}
+
+section[data-testid="stSidebar"] .stRadio label:hover {
+    background: rgba(0,180,255,0.08);
+    border-color: rgba(0,180,255,0.35);
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -293,79 +316,78 @@ if "bank_data" not in st.session_state:
 st.markdown("""
 <div class="hero">
     <div class="hero-badge">✦ Secure Banking Platform</div>
-    <h1>TATA CAPITAL BANK</h1>
+    <h1>🏦 Welcome to TATA CAPITAL BANK</h1>
     <p>Modern. Secure. Instant. Your money, always in control.</p>
 </div>
 """, unsafe_allow_html=True)
+
+st.image(
+    "TATA.jpeg",
+    use_container_width=True
+)
 
 
 
 
 
 # ─── NAVIGATION ─────────────────────────────────────────────────────────────
-pages = {
-    "🏠 Home":"Home",
-    "➕  Create Account": "Create Account",
-    "💰  Deposit":        "Deposit",
-    "💸  Withdraw":       "Withdraw",
-    "👤  My Account":     "My Account",
-    "🔍  Search Customer":"Search Customer",
-    "📋  All Customers": "All Customers",
-    "✏️  Update Details": "Update Details",
-    "🗑️  Delete Account": "Delete Account",
-}
 
-cols = st.columns(len(pages))
-for col, (label, key) in zip(cols, pages.items()):
-    if col.button(label, key=f"nav_{key}"):
-        st.session_state.page = key
+with st.sidebar:
 
-st.markdown("<hr class='divider'>", unsafe_allow_html=True)
+    st.image("TATA.jpeg", use_container_width=True)
 
-page = st.session_state.page
+    st.markdown("## 🏦 TATA CAPITAL BANK")
+
+    page = st.radio(
+        "Navigation",
+        [ 
+
+        "🏠 Home",
+        "➕ Create Account",
+        "💰 Deposit Money",
+        "💸 Withdraw Money",
+        "👤 My Account",
+        "🔍 Search Customer",
+        "📋 All Customers",
+        "✏️ Update Details",
+        "🗑️ Delete Account"
+        ],
+        label_visibility="collapsed"
+    )
+
 data = st.session_state.bank_data
 
-if page == "Home":
+if page == "🏠 Home":
 
-    st.image(
-    "TATA.jpeg",
-    use_container_width=True
-)
+    col1, col2, col3 = st.columns(3)
+    col1.metric("👥 Customers", len(data))
+    col2.metric("💰 Total Balance", f"₹{sum(u['balance'] for u in data):,}")
+    col3.metric("🏦 Status", "Active")
 
-    st.markdown("""
-    <div class="card">
-        <div class="card-title">🏦 Welcome to TATA CAPITAL BANK</div>
 
-        <p style="font-size:18px;">
-        TATA CAPITAL BANK is a modern digital banking platform offering
-        secure banking, instant deposits, withdrawals, account management,
-        customer support and seamless financial services.
-        </p>
+    st.write("## 🏦 Welcome to TATA CAPITAL BANK")
 
-        <br>
+    st.write("""
+    TATA CAPITAL BANK is a modern digital banking platform offering secure banking,
+    instant deposits, withdrawals, account management and customer support.
+    """)
 
-        <h4>Why Choose Us?</h4>
+    st.write("### Why Choose Us?")
+    st.write("✅ Secure Transactions")
+    st.write("✅ 24/7 Banking Access")
+    st.write("✅ Instant Account Creation")
+    st.write("✅ Fast Deposit & Withdrawals")
+    st.write("✅ Customer-Friendly Interface")
 
-        ✅ Secure Transactions<br>
-        ✅ 24/7 Banking Access<br>
-        ✅ Instant Account Creation<br>
-        ✅ Fast Deposit & Withdrawals<br>
-        ✅ Customer-Friendly Interface<br>
-        ✅ Trusted Banking Experience
-
-        <br><br>
-
-        <h4>Contact Information</h4>
-
-        📞 Customer Care: +91 1800-267-6060<br>
-        📧 support@tatacapitalbank.com<br>
-        🌐 www.tatacapitalbank.com
-    </div>
-    """, unsafe_allow_html=True) 
+    st.write("### Contact Information")
+    st.write("📞 +91 1800-267-6060")
+    st.write("📧 support@tatacapitalbank.com")
+    st.write("🌐 www.tatacapital.com")
+    
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: CREATE ACCOUNT
 # ═══════════════════════════════════════════════════════════════════════════
-if page == "Create Account":
+elif page == "➕ Create Account":
     st.markdown("""
     <div class="card">
         <div class="card-title">➕ Open New Account</div>
@@ -420,7 +442,7 @@ if page == "Create Account":
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: DEPOSIT
 # ═══════════════════════════════════════════════════════════════════════════
-elif page == "Deposit":
+elif page == "💰 Deposit Money":
     st.markdown("""
     <div class="card">
         <div class="card-title">💰 Deposit Money</div>
@@ -463,7 +485,7 @@ elif page == "Deposit":
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: WITHDRAW
 # ═══════════════════════════════════════════════════════════════════════════
-elif page == "Withdraw":
+elif page ==  "💸 Withdraw Money":
     st.markdown("""
     <div class="card">
         <div class="card-title">💸 Withdraw Money</div>
@@ -508,7 +530,7 @@ elif page == "Withdraw":
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: MY ACCOUNT
 # ═══════════════════════════════════════════════════════════════════════════
-elif page == "My Account":
+elif page == "👤 My Account":
     st.markdown("""
     <div class="card">
         <div class="card-title">👤 Account Details</div>
@@ -554,7 +576,8 @@ elif page == "My Account":
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: ALL CUSTOMERS
 # ═══════════════════════════════════════════════════════════════════════════
-elif page == "All Customers":
+elif page == "📋 All Customers":
+
 
     st.markdown("""
     <div class="card">
@@ -571,50 +594,28 @@ elif page == "All Customers":
 
         total_customers = len(data)
         total_balance = sum(user["balance"] for user in data)
+
+        col1, col2 = st.columns(2)
+
+        col1.metric("👥 Total Customers", total_customers)
+        col2.metric("💰 Total Balance", f"₹{total_balance:,}")
+
+
         highest = max(data, key=lambda x: x["balance"])
         lowest = min(data, key=lambda x: x["balance"])
 
+        st.info(
+            f"Highest Balance: {highest['name']} (₹{highest['balance']:,})"
+        )
 
-        st.markdown(f"""
-        <div class="metric-row">
+        st.info(
+            f"Lowest Balance: {lowest['name']} (₹{lowest['balance']:,})"
+        )
 
-            <div class="metric-tile">
-                <div class="metric-label">Total Customers</div>
-                <div class="metric-value blue">{total_customers}</div>
-            </div>
+       
+     
 
-            <div class="metric-tile">
-                <div class="metric-label">Total Bank Balance</div>
-                <div class="metric-value green">₹{total_balance:,}</div>
-            </div>
-
-        </div>
-
-        <div class="metric-row">
-
-            <div class="metric-tile">
-                <div class="metric-label">Highest Balance Account</div>
-                <div class="metric-value blue">
-                    ₹{highest['balance']:,}
-                </div>
-                <div style="color:#7a8499;">
-                    {highest['name']}
-                </div>
-            </div>
-
-            <div class="metric-tile">
-                <div class="metric-label">Lowest Balance Account</div>
-                <div class="metric-value" style="color:#ff6b6b;">
-                    ₹{lowest['balance']:,}
-                </div>
-                <div style="color:#7a8499;">
-                    {lowest['name']}
-                </div>
-            </div>
-
-        </div>
-        """, unsafe_allow_html=True)
-
+        
 
         st.markdown("### Customer Records")
 
@@ -622,7 +623,7 @@ elif page == "All Customers":
 
         for user in data:
             table_data.append({
-                "Account No": user["AccountNo"],
+                "Account No": user.get("AccountNo", user.get("Account No", "N/A")),   
                 "Name": user["name"],
                 "Email": user["email"],
                 "Balance": f"₹{user['balance']:,}"
@@ -634,7 +635,7 @@ elif page == "All Customers":
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: UPDATE DETAILS
 # ═══════════════════════════════════════════════════════════════════════════
-elif page == "Update Details":
+elif page ==   "✏️ Update Details":
     st.markdown("""
     <div class="card">
         <div class="card-title">✏️ Update Details</div>
@@ -674,7 +675,7 @@ elif page == "Update Details":
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: SEARCH CUSTOMER
 # ═══════════════════════════════════════════════════════════════════════════
-elif page == "Search Customer":
+elif page == "🔍 Search Customer":
 
     st.markdown("""
     <div class="card">
@@ -745,7 +746,7 @@ elif page == "Search Customer":
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: DELETE ACCOUNT
 # ═══════════════════════════════════════════════════════════════════════════
-elif page == "Delete Account":
+elif page == "🗑️ Delete Account":
     st.markdown("""
     <div class="card" style="border-color:rgba(255,80,80,0.2);">
         <div class="card-title" style="color:#ff6b6b;">🗑️ Delete Account</div>
