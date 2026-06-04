@@ -3,10 +3,11 @@ import random
 import string
 from pathlib import Path
 import streamlit as st
+import pandas as pd
 
 # ─── PAGE CONFIG ────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="NeoBank",
+    page_title="TATA CAPITAL BANK",
     page_icon="🏦",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -165,25 +166,49 @@ div[data-testid="stHorizontalBlock"] button:hover {
     text-transform: uppercase !important;
 }
 
-/* ── Primary button ── */
+/* ── Premium Banking Buttons ── */
 [data-testid="stFormSubmitButton"] button,
 .stButton > button {
-    background: linear-gradient(135deg, #0070f3, #00b4ff) !important;
+
+    background: linear-gradient(
+        135deg,
+        #005bea,
+        #00c6fb
+    ) !important;
+
     border: none !important;
-    border-radius: 10px !important;
-    color: #fff !important;
+    border-radius: 15px !important;
+
+    color: white !important;
+
     font-family: 'Syne', sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 0.88rem !important;
-    padding: 0.65rem 1.6rem !important;
-    letter-spacing: 0.04em !important;
-    transition: opacity 0.2s, transform 0.15s !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+
+    height: 55px !important;
     width: 100% !important;
+
+    box-shadow:
+        0px 10px 25px rgba(0,198,251,0.35);
+
+    transition: all 0.3s ease !important;
 }
+
 [data-testid="stFormSubmitButton"] button:hover,
 .stButton > button:hover {
-    opacity: 0.88 !important;
-    transform: translateY(-1px) !important;
+
+    transform: translateY(-3px) scale(1.02);
+
+    box-shadow:
+        0px 15px 35px rgba(0,198,251,0.5);
+
+    opacity: 1 !important;
+}
+
+[data-testid="stFormSubmitButton"] button:active,
+.stButton > button:active {
+
+    transform: scale(0.98);
 }
 
 /* ── Alerts ── */
@@ -242,10 +267,24 @@ def generate_account():
 def find_user(data, accno, pin):
     return [u for u in data if u["AccountNo"] == accno and u["pin"] == pin]
 
+def search_customer(data, search_type, keyword):
+    keyword = keyword.lower()
+
+    if search_type == "Account Number":
+        return [u for u in data if keyword in u["AccountNo"].lower()]
+
+    elif search_type == "Name":
+        return [u for u in data if keyword in u["name"].lower()]
+
+    elif search_type == "Email":
+        return [u for u in data if keyword in u["email"].lower()]
+
+    return []
+
 
 # ─── SESSION STATE ───────────────────────────────────────────────────────────
 if "page" not in st.session_state:
-    st.session_state.page = "Create Account"
+    st.session_state.page = "Home"
 if "bank_data" not in st.session_state:
     st.session_state.bank_data = load_data()
 
@@ -254,18 +293,24 @@ if "bank_data" not in st.session_state:
 st.markdown("""
 <div class="hero">
     <div class="hero-badge">✦ Secure Banking Platform</div>
-    <h1>NeoBank</h1>
+    <h1>TATA CAPITAL BANK</h1>
     <p>Modern. Secure. Instant. Your money, always in control.</p>
 </div>
 """, unsafe_allow_html=True)
 
 
+
+
+
 # ─── NAVIGATION ─────────────────────────────────────────────────────────────
 pages = {
+    "🏠 Home":"Home",
     "➕  Create Account": "Create Account",
     "💰  Deposit":        "Deposit",
     "💸  Withdraw":       "Withdraw",
     "👤  My Account":     "My Account",
+    "🔍  Search Customer":"Search Customer",
+    "📋  All Customers": "All Customers",
     "✏️  Update Details": "Update Details",
     "🗑️  Delete Account": "Delete Account",
 }
@@ -280,7 +325,43 @@ st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 page = st.session_state.page
 data = st.session_state.bank_data
 
+if page == "Home":
 
+    st.image(
+    "TATA.jpeg",
+    use_container_width=True
+)
+
+    st.markdown("""
+    <div class="card">
+        <div class="card-title">🏦 Welcome to TATA CAPITAL BANK</div>
+
+        <p style="font-size:18px;">
+        TATA CAPITAL BANK is a modern digital banking platform offering
+        secure banking, instant deposits, withdrawals, account management,
+        customer support and seamless financial services.
+        </p>
+
+        <br>
+
+        <h4>Why Choose Us?</h4>
+
+        ✅ Secure Transactions<br>
+        ✅ 24/7 Banking Access<br>
+        ✅ Instant Account Creation<br>
+        ✅ Fast Deposit & Withdrawals<br>
+        ✅ Customer-Friendly Interface<br>
+        ✅ Trusted Banking Experience
+
+        <br><br>
+
+        <h4>Contact Information</h4>
+
+        📞 Customer Care: +91 1800-267-6060<br>
+        📧 support@tatacapitalbank.com<br>
+        🌐 www.tatacapitalbank.com
+    </div>
+    """, unsafe_allow_html=True) 
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: CREATE ACCOUNT
 # ═══════════════════════════════════════════════════════════════════════════
@@ -470,6 +551,85 @@ elif page == "My Account":
                 </div>
                 """, unsafe_allow_html=True)
 
+# ═══════════════════════════════════════════════════════════════════════════
+# PAGE: ALL CUSTOMERS
+# ═══════════════════════════════════════════════════════════════════════════
+elif page == "All Customers":
+
+    st.markdown("""
+    <div class="card">
+        <div class="card-title">📋 All Customers</div>
+        <div class="card-sub">
+            View all registered bank customers.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    if not data:
+        st.warning("No customers found.")
+    else:
+
+        total_customers = len(data)
+        total_balance = sum(user["balance"] for user in data)
+        highest = max(data, key=lambda x: x["balance"])
+        lowest = min(data, key=lambda x: x["balance"])
+
+
+        st.markdown(f"""
+        <div class="metric-row">
+
+            <div class="metric-tile">
+                <div class="metric-label">Total Customers</div>
+                <div class="metric-value blue">{total_customers}</div>
+            </div>
+
+            <div class="metric-tile">
+                <div class="metric-label">Total Bank Balance</div>
+                <div class="metric-value green">₹{total_balance:,}</div>
+            </div>
+
+        </div>
+
+        <div class="metric-row">
+
+            <div class="metric-tile">
+                <div class="metric-label">Highest Balance Account</div>
+                <div class="metric-value blue">
+                    ₹{highest['balance']:,}
+                </div>
+                <div style="color:#7a8499;">
+                    {highest['name']}
+                </div>
+            </div>
+
+            <div class="metric-tile">
+                <div class="metric-label">Lowest Balance Account</div>
+                <div class="metric-value" style="color:#ff6b6b;">
+                    ₹{lowest['balance']:,}
+                </div>
+                <div style="color:#7a8499;">
+                    {lowest['name']}
+                </div>
+            </div>
+
+        </div>
+        """, unsafe_allow_html=True)
+
+
+        st.markdown("### Customer Records")
+
+        table_data = []
+
+        for user in data:
+            table_data.append({
+                "Account No": user["AccountNo"],
+                "Name": user["name"],
+                "Email": user["email"],
+                "Balance": f"₹{user['balance']:,}"
+            })
+
+        df = pd.DataFrame(table_data)
+        st.dataframe(df, use_container_width=True)
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: UPDATE DETAILS
@@ -511,6 +671,76 @@ elif page == "Update Details":
                 st.session_state.bank_data = data
                 st.success("✅ Details updated successfully!")
 
+# ═══════════════════════════════════════════════════════════════════════════
+# PAGE: SEARCH CUSTOMER
+# ═══════════════════════════════════════════════════════════════════════════
+elif page == "Search Customer":
+
+    st.markdown("""
+    <div class="card">
+        <div class="card-title">🔍 Search Customer</div>
+        <div class="card-sub">
+            Search customers using Account Number, Name or Email.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    search_type = st.selectbox(
+        "Search By",
+        ["Account Number", "Name", "Email"]
+    )
+
+    keyword = st.text_input("Enter Search Value")
+
+    if st.button("🔍 Search"):
+
+        if not keyword:
+            st.warning("Please enter a value.")
+        else:
+
+            results = search_customer(
+                data,
+                search_type,
+                keyword
+            )
+
+            if results:
+
+                st.success(
+                    f"{len(results)} customer(s) found."
+                )
+
+                for user in results:
+
+                    st.markdown(f"""
+                    <div class="card">
+                        <table class="info-table">
+                            <tr>
+                                <td>Name</td>
+                                <td>{user['name']}</td>
+                            </tr>
+                            <tr>
+                                <td>Age</td>
+                                <td>{user['age']}</td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>{user['email']}</td>
+                            </tr>
+                            <tr>
+                                <td>Account No</td>
+                                <td>{user['AccountNo']}</td>
+                            </tr>
+                            <tr>
+                                <td>Balance</td>
+                                <td>₹{user['balance']:,}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+            else:
+                st.error("No customer found.")
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PAGE: DELETE ACCOUNT
@@ -549,6 +779,6 @@ elif page == "Delete Account":
 st.markdown("""
 <br><br>
 <div style="text-align:center; color:#1e2535; font-size:0.75rem; font-family:'DM Sans',sans-serif;">
-    NeoBank © 2024 &nbsp;·&nbsp; Secure Banking Platform &nbsp;·&nbsp; Built with Streamlit
+    TATA CAPITAL BANK © 2026 &nbsp;·&nbsp; Secure Banking Platform &nbsp;·&nbsp; Built with Streamlit
 </div>
 """, unsafe_allow_html=True)
